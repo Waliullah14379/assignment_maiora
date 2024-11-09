@@ -1,0 +1,161 @@
+<div class="container">
+    <div class="header">
+        <h2>Student Leaves</h2>
+        <div class="academic-year">
+          <label for="academicYear">Academic Year</label>
+          <select id="academicYear" [(ngModel)]="academicYear">
+            <option value="2022-2023">2022-2023</option>
+            <!-- Add more years as needed -->
+          </select>
+        </div>
+        <div class="search-bar">
+          <input [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search Student" />
+        </div>
+        <button (click)="addNewLeave()">+ Add New Leave</button>
+      </div>
+  
+    <table mat-table [dataSource]="filteredLeaves" class="leaves-table">
+      <!-- Enrollment Number Column -->
+      <ng-container matColumnDef="enrollmentNumber">
+        <th mat-header-cell *matHeaderCellDef> Enrollment Number </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.enrollmentNumber}} </td>
+      </ng-container>
+  
+      <!-- Student Name Column -->
+      <ng-container matColumnDef="studentName">
+        <th mat-header-cell *matHeaderCellDef> Student Name </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.studentName}} </td>
+      </ng-container>
+  
+      <!-- Class Column -->
+      <ng-container matColumnDef="class">
+        <th mat-header-cell *matHeaderCellDef> Class </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.class}} </td>
+      </ng-container>
+  
+      <!-- Section Column -->
+      <ng-container matColumnDef="section">
+        <th mat-header-cell *matHeaderCellDef> Section </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.section}} </td>
+      </ng-container>
+  
+      <!-- Reason Column -->
+      <ng-container matColumnDef="reason">
+        <th mat-header-cell *matHeaderCellDef> Reason </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.reason}} </td>
+      </ng-container>
+  
+      <!-- Leave Date Column -->
+      <ng-container matColumnDef="leaveDate">
+        <th mat-header-cell *matHeaderCellDef> Leave Date </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.leaveDate}} </td>
+      </ng-container>
+  
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let leave"> {{leave.status}} </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="['enrollmentNumber', 'studentName', 'class', 'section', 'reason', 'leaveDate', 'status']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['enrollmentNumber', 'studentName', 'class', 'section', 'reason', 'leaveDate', 'status'];"></tr>
+    </table>
+  </div>
+  
+
+
+  <nz-modal
+      [(nzVisible)]="isVisibleMiddle"
+      nzTitle="Add leave"
+      nzCentered
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOkTop()"
+    >
+      <ng-container *nzModalContent>
+        <h3>Add New Leave</h3>
+        <form [formGroup]="addLeaveForm" nz-form>
+          <!-- Select Student Dropdown -->
+           <div nz-row>
+
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+              <nz-select formControlName="student" nzPlaceHolder="Select Student">
+                  @for (item of students; track item) {
+                    <nz-option [nzValue]="item" [nzLabel]="item"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- Select Class Dropdown -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+              <nz-select formControlName="class" nzPlaceHolder="Select Class">
+                @for (class of classes; track class) {
+                    <nz-option [nzValue]="class" [nzLabel]="class"></nz-option>
+                  }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- Select Section Dropdown -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+              <nz-select formControlName="section" nzPlaceHolder="Select Section">
+                @for (section of sections; track section) {
+                    <nz-option [nzValue]="section" [nzLabel]="section"></nz-option>
+                  }
+              </nz-select>
+
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- Leave Type Radio Buttons (Single Day or Multiple Days) -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+                <nz-form-label [nzSpan]="6">Numbers of leaves days</nz-form-label>
+              <nz-radio-group formControlName="leaveType">
+                <label nz-radio nzValue="single">Single Day</label>
+                <label nz-radio nzValue="multiple">Multiple Days</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- Start Date Picker -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+              <nz-date-picker formControlName="startDate"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- End Date Picker (Only shown if "Multiple Days" is selected) -->
+          @if (addLeaveForm.get('leaveType')?.value === 'multiple') {
+            <nz-form-item nz-col [nzSpan]="11">
+\              <nz-form-control  >
+                <nz-date-picker formControlName="endDate"></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+          }
+        
+          <!-- Reason Text Area -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+              <textarea nz-input formControlName="reason" rows="3"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        
+          <!-- Status Radio Buttons (Approved or Unapproved) -->
+          <nz-form-item nz-col [nzSpan]="11">
+            <nz-form-control  >
+                <nz-form-label [nzSpan]="6">Status</nz-form-label>
+              <nz-radio-group formControlName="status">
+                <label nz-radio nzValue="approved">Approved</label>
+                <label nz-radio nzValue="unapproved">Unapproved</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        </form>
+        
+      </ng-container>
+    </nz-modal>

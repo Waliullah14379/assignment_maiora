@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "ng-zorro-antd/ng-zorro-antd.min.css";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mat-dialog-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px; /* Optional: Rounded corners for dialog */
+    padding: 16px;      /* Optional: Adds padding inside dialog */
+  }
+  .nz-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
